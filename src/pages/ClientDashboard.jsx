@@ -197,8 +197,7 @@
 // export default ClientDashboard;
 
 
-import { useMemo } from "react";
-
+import { useMemo, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -211,7 +210,7 @@ import {
   Legend
 } from "chart.js";
 
-import { Line, Doughnut, Bar } from "react-chartjs-2";
+import { Line, Doughnut } from "react-chartjs-2";
 import windSensorData from "../data/windSensorData";
 import { useAuth } from "../auth/AuthContext";
 
@@ -229,23 +228,36 @@ ChartJS.register(
 export default function UserDashboard() {
   const { user } = useAuth();
 
-  /* ================= FILTER USER DATA ================= */
-  const userData = useMemo(() => {
+  /* ================= PLANT DROPDOWN STATE ================= */
+  const [selectedPlantId, setSelectedPlantId] = useState("ALL");
+
+  /* ================= USER DATA (ALL PLANTS) ================= */
+  const userDataAll = useMemo(() => {
     if (!user?.email) return [];
     return windSensorData.filter(
       d => d.user_email === user.email
     );
   }, [user]);
 
+  /* ================= PLANT LIST ================= */
+  const plantIds = useMemo(() => {
+    return [...new Set(userDataAll.map(d => d.plant_id))];
+  }, [userDataAll]);
+
+  /* ================= FILTER BY SELECTED PLANT ================= */
+  const userData = useMemo(() => {
+    if (selectedPlantId === "ALL") return userDataAll;
+    return userDataAll.filter(d => d.plant_id === selectedPlantId);
+  }, [userDataAll, selectedPlantId]);
+
   const userName = userData.length > 0 ? userData[0].user_name : "";
 
-  const getDynamicMax = (data, key, fallbackMax) => {
+  /* ================= UTIL ================= */
+  const getDynamicMax = (data, key, fallback) => {
     const values = data.map(d => Number(d[key]) || 0);
     const max = Math.max(...values);
-    return max > 0 ? Math.ceil(max) : fallbackMax;
+    return max > 0 ? Math.ceil(max) : fallback;
   };
-
-
 
   /* ================= KPI ================= */
   const avgTotalCostMillions = useMemo(() => {
@@ -255,7 +267,6 @@ export default function UserDashboard() {
     return (avg / 1_000_000).toFixed(2);
   }, [userData]);
 
-  /* ================= AVG WIND SPEED ================= */
   const avgWindSpeed = useMemo(() => {
     const valid = userData.filter(d => d.wind_speed > 0);
     if (!valid.length) return "0.00";
@@ -264,7 +275,6 @@ export default function UserDashboard() {
     ).toFixed(2);
   }, [userData]);
 
-  /* ================= AVERAGE THEORETICAL POWER ================= */
   const avgTheoreticalPower = useMemo(() => {
     if (!userData.length) return "0.00";
     return (
@@ -273,7 +283,6 @@ export default function UserDashboard() {
     ).toFixed(2);
   }, [userData]);
 
-  /* ================= AVERAGE POWER OUTPUT ================= */
   const avgPowerOutput = useMemo(() => {
     if (!userData.length) return "0.00";
     return (
@@ -282,7 +291,6 @@ export default function UserDashboard() {
     ).toFixed(2);
   }, [userData]);
 
-  /* ================= AVERAGE WIND DIRECTION ================= */
   const avgWindDirection = useMemo(() => {
     if (!userData.length) return "0.00";
     return (
@@ -291,9 +299,9 @@ export default function UserDashboard() {
     ).toFixed(2);
   }, [userData]);
 
+  /* ================= GAUGE ================= */
   const createGaugeData = (value, max, color) => {
     const safeValue = Math.min(Number(value), max);
-
     return {
       datasets: [
         {
@@ -307,7 +315,6 @@ export default function UserDashboard() {
       ]
     };
   };
-
 
   const gaugeOptionsCommon = {
     plugins: {
@@ -324,46 +331,17 @@ export default function UserDashboard() {
     () => getDynamicMax(userData, "wind_speed", 20),
     [userData]
   );
-
   const maxTheoreticalPower = useMemo(
     () => getDynamicMax(userData, "theoretical_power", 50),
     [userData]
   );
-
   const maxPowerOutput = useMemo(
     () => getDynamicMax(userData, "power_output", 100),
     [userData]
   );
+  const maxWindDirection = 360;
 
-  const maxWindDirection = 360; // direction is always 0–360
-
-
-  /* ================= HALF GAUGE ================= */
-  const gaugeData = {
-    datasets: [
-      {
-        data: [Number(avgWindSpeed), 20 - Number(avgWindSpeed)],
-        backgroundColor: ["#0d6efd", "#e9ecef"],
-        borderWidth: 0,
-        cutout: "75%",
-        circumference: 180,
-        rotation: 270
-      }
-    ]
-  };
-
-  const gaugeOptions = {
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: () => `Average Wind Speed: ${avgWindSpeed}`
-        }
-      },
-      legend: { display: false }
-    }
-  };
-
-  /* ================= LINE CHART (UNCHANGED) ================= */
+  /* ================= LINE CHART ================= */
   const groupedByYear = useMemo(() => {
     const map = {};
     userData.forEach(d => {
@@ -388,203 +366,80 @@ export default function UserDashboard() {
   const lineChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-
-    layout: {
-      padding: {
-        bottom: 10   // 👈 THIS FIXES THE OVERFLOW
-      }
-    },
-
-    plugins: {
-      legend: {
-        display: true,
-        position: "top"
-      }
-    },
-
+    plugins: { legend: { position: "top" } },
     scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Product Type1 Wind Turbine",
-          font: {
-            size: 12
-          },
-          padding: {
-            top: 5
-          }
-        },
-        ticks: {
-          maxRotation: 0,
-          autoSkip: true
-        }
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Count of Product Type1 Wind Turbine",
-          font: {
-            size: 12
-          }
-        },
-        beginAtZero: true
-      }
+      y: { beginAtZero: true }
     }
   };
-
-  /* ================= PRODUCT LINE CHART BUILDER ================= */
-const buildProductLineData = (productKey) => {
-  const yearMap = {};
-
-  userData.forEach(d => {
-    if (!yearMap[d.installation_year]) {
-      yearMap[d.installation_year] = 0;
-    }
-    yearMap[d.installation_year] += Number(d[productKey]) || 0;
-  });
-
-  return {
-    labels: Object.keys(yearMap),
-    datasets: [
-      {
-        label: productKey.replace(/_/g, " "),
-        data: Object.values(yearMap),
-        borderColor: "#0d6efd",
-        backgroundColor: "rgba(13,110,253,0.1)",
-        tension: 0.4,
-        fill: true
-      }
-    ]
-  };
-};
-
-
-
 
   return (
     <div className="container-fluid p-3">
 
-      {/* ===== HEADER (CHANGED TEXT ONLY) ===== */}
-      <div className="dashboard-header">
+      {/* ===== HEADER ===== */}
+      <div className="dashboard-header mb-2">
         <h3>{userName || user?.user_id} Dashboard</h3>
-
       </div>
 
+      {/* ===== PLANT DROPDOWN ===== */}
+      {plantIds.length > 1 && (
+        <div className="row mb-3">
+          <div className="col-md-4">
+            <label className="form-label fw-bold">Select Plant</label>
+            <select
+              className="form-select"
+              value={selectedPlantId}
+              onChange={(e) => setSelectedPlantId(e.target.value)}
+            >
+              <option value="ALL">All Plants</option>
+              {plantIds.map(id => (
+                <option key={id} value={id}>{id}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
       {/* ===== KPI ===== */}
-      <div className="row mt-3">
+      <div className="row">
         <div className="col-md-4">
           <div className="kpi-card">
-            <h5> Total Cost</h5>
+            <h5>Total Cost</h5>
             <h2>{avgTotalCostMillions} M</h2>
           </div>
         </div>
       </div>
-      {/* ===== KPI GAUGE CARDS (ALL 4 IN ONE ROW) ===== */}
+
+      {/* ===== KPI GAUGES ===== */}
       <div className="row mt-4">
-
-        {/* THEORETICAL POWER */}
-        <div className="col-md-3">
-          <div className="card p-3 kpi-gauge-card">
-            <h6 className="text-center">Avg Theoretical Power</h6>
-
-            <div className="gauge-body">
-              <Doughnut
-                data={createGaugeData(avgTheoreticalPower, maxTheoreticalPower, "#198754")}
-                options={gaugeOptionsCommon}
-              />
-
-              <div className="gauge-center-value">
-                {avgTheoreticalPower}
+        {[
+          ["Avg Theoretical Power", avgTheoreticalPower, maxTheoreticalPower, "#198754"],
+          ["Avg Power Output", avgPowerOutput, maxPowerOutput, "#0d6efd"],
+          ["Avg Wind Direction", avgWindDirection, maxWindDirection, "#dc3545"],
+          ["Avg Wind Speed", avgWindSpeed, maxWindSpeed, "#6f42c1"]
+        ].map(([title, value, max, color], i) => (
+          <div className="col-md-3" key={i}>
+            <div className="card p-3 kpi-gauge-card">
+              <h6 className="text-center">{title}</h6>
+              <div className="gauge-body">
+                <Doughnut
+                  data={createGaugeData(value, max, color)}
+                  options={gaugeOptionsCommon}
+                />
+                <div className="gauge-center-value">
+                  {value}{title.includes("Direction") && "°"}
+                </div>
+              </div>
+              <div className="gauge-footer">
+                <span>0</span>
+                <span>{max}</span>
               </div>
             </div>
-
-            <div className="gauge-footer">
-              <span>0</span>
-              <span>{maxTheoreticalPower}</span>
-            </div>
-
           </div>
-        </div>
-
-        {/* POWER OUTPUT */}
-        <div className="col-md-3">
-          <div className="card p-3 kpi-gauge-card">
-            <h6 className="text-center">Avg Power Output</h6>
-
-            <div className="gauge-body">
-              <Doughnut
-                data={createGaugeData(avgPowerOutput, maxPowerOutput, "#0d6efd")}
-                options={gaugeOptionsCommon}
-              />
-
-              <div className="gauge-center-value">
-                {avgPowerOutput}
-              </div>
-            </div>
-
-            <div className="gauge-footer">
-              <span>0</span>
-              <span>{maxPowerOutput}</span>
-            </div>
-
-          </div>
-        </div>
-
-        {/* WIND DIRECTION */}
-        <div className="col-md-3">
-          <div className="card p-3 kpi-gauge-card">
-            <h6 className="text-center">Avg Wind Direction</h6>
-
-            <div className="gauge-body">
-              <Doughnut
-                data={createGaugeData(avgWindDirection, maxWindDirection, "#dc3545")}
-                options={gaugeOptionsCommon}
-              />
-
-              <div className="gauge-center-value">
-                {avgWindDirection}°
-              </div>
-            </div>
-
-            <div className="gauge-footer">
-              <span>0°</span>
-              <span>{maxWindDirection}°</span>
-            </div>
-
-          </div>
-        </div>
-
-        {/* WIND SPEED */}
-        <div className="col-md-3">
-          <div className="card p-3 kpi-gauge-card">
-            <h6 className="text-center">Avg Wind Speed</h6>
-
-            <div className="gauge-body">
-              <Doughnut
-                data={createGaugeData(avgWindSpeed, maxWindSpeed, "#6f42c1")}
-                options={gaugeOptionsCommon}
-              />
-
-              <div className="gauge-center-value">
-                {avgWindSpeed}
-              </div>
-            </div>
-
-            <div className="gauge-footer">
-              <span>0</span>
-              <span>{maxWindSpeed}</span>
-            </div>
-
-          </div>
-        </div>
-
+        ))}
       </div>
 
-
-      {/* ===== LINE + GAUGE SIDE BY SIDE ===== */}
+      {/* ===== LINE CHART ===== */}
       <div className="row mt-4">
-
-        {/* ===== LINE CHART ===== */}
         <div className="col-md-7">
           <div className="card p-3" style={{ height: "290px" }}>
             <h6 className="text-center">
@@ -595,8 +450,7 @@ const buildProductLineData = (productKey) => {
         </div>
       </div>
 
-
-      {/* ===== TABLE (UNCHANGED) ===== */}
+      {/* ===== TABLE ===== */}
       <div className="card mt-4 p-3 table-card">
         <table className="table table-striped">
           <thead className="table-dark">

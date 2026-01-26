@@ -177,7 +177,7 @@ const Cart = () => {
       <div className="d-flex gap-3 mt-4">
         <button
           className="btn btn-secondary flex-fill py-2"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/products")}
         >
           ⬅ Back
         </button>

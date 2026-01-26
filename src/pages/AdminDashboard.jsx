@@ -295,7 +295,6 @@ const userOptions = useMemo(() => {
             <h3>{totalType1.toLocaleString()}</h3>
           </div>
         </div>
-
       </div>
 
       {/* ROW 2 – 3 CARDS */}
