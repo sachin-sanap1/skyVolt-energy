@@ -1,108 +1,172 @@
+/* === Overall Dashboard Background & Typography === */
+.container-fluid {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* === Header Style === */
 .dashboard-header {
-  background: linear-gradient(90deg, #6f2c00, #c96b00);
-  color: #fff;
+  background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+  padding: 1rem;
   text-align: center;
-  padding: 10px;
   border-radius: 8px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+.dashboard-header h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* === Dropdown Section === */
+.form-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.form-select {
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* === KPI Cards (Total Cost Card) === */
 .kpi-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
+  background: linear-gradient(135deg, #198754, #157347);
+  color: white;
+  padding: 1.2rem;
+  border-radius: 10px;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.kpi-card h5 {
-  color: #0872cf !important ;
+  box-shadow: 0 4px 10px rgba(25, 135, 84, 0.2);
 }
 
-.kpi-card h6 {
-  color: #6c757d !important ;
+.kpi-card h5 {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
 .kpi-card h2 {
-  font-weight: bold;
-  color: #0d6efd;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
-
-.table-card {
-  height: 20vh;
-  overflow-y: auto;
-}
-
-/* ===== HALF GAUGE ALIGNMENT ===== */
-
-.gauge-body {
-  position: relative;
-  height: 150px;
-  width: 95%;
-}
-
-.gauge-body canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.gauge-center-value {
-  position: absolute;
-  bottom: 38px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 24px;
-  font-weight: bold;
-  color: #212529;
-  pointer-events: none;
-}
-
-.gauge-footer {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 15px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #212529;
-}
-
-/* ===== KPI GAUGE CARD UNIFORM SIZE ===== */
+/* === Gauge Cards (Avg Theoretical Power, etc.) === */
 .kpi-gauge-card {
-  height: 300px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+  height: 240px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-/* ===== GAUGE BODY ===== */
+.kpi-gauge-card h6 {
+  margin-bottom: 0.5rem;
+  color: #495057;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 .gauge-body {
   position: relative;
-  height: 180px;
+  flex-grow: 1;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* ===== FORCE SAME GAUGE SIZE ===== */
-.gauge-body canvas {
-  width: 100% !important;
-  max-width: 200px !important;
-  height: 140px !important;
-}
-
-/* ===== CENTER VALUE ===== */
 .gauge-center-value {
   position: absolute;
-  bottom: 30px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  font-size: 22px;
+  transform: translate(-50%, -50%);
+  font-size: 1.1rem;
   font-weight: 700;
+  color: #212529;
 }
 
-/* ===== FOOTER ===== */
 .gauge-footer {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
-  padding: 0 10px;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* === Line Chart Card === */
+.card h6 {
+  margin-bottom: 0.7rem;
+  color: #495057;
+  font-weight: 600;
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+/* === Table Card === */
+.table-card {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+  overflow: hidden;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: #343a40;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.table tbody tr:hover {
+  background-color: #e9ecef;
+  transition: background-color 0.2s ease;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+  padding: 0.75rem;
+}
+
+/* === Responsive Adjustments === */
+@media (max-width: 768px) {
+  .kpi-gauge-card {
+    height: 220px;
+  }
+
+  .kpi-card h2 {
+    font-size: 1.6rem;
+  }
+
+  .gauge-center-value {
+    font-size: 1rem;
+  }
 }
