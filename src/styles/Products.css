@@ -1,68 +1,110 @@
-/* PRODUCT CARD */
-.product-card {
-  border-radius: 16px;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+/* --- Global Page Refinements --- */
+.bg-light {
+    background-color: #f7f9fa !important; /* Brighter, cleaner background */
 }
 
-.product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15);
+/* --- Breadcrumb Styling --- */
+.breadcrumb-item a {
+    color: #6c757d;
+    font-weight: 500;
+    transition: color 0.2s;
 }
 
-/* IMAGE */
-.product-image {
-  height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
+.breadcrumb-item a:hover {
+    color: #0071dc;
 }
 
-.product-image img {
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: contain;
+/* --- Product Card Enhancements --- */
+.product-card-hover {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background-color: #ffffff;
+    border: 1px solid #f0f0f0 !important;
 }
 
-/* PRICE */
-.price {
-  color: #16a34a;
-  font-size: 1.2rem;
-  font-weight: 700;
+.product-card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+    border-color: #0071dc33 !important;
 }
 
-/* CIRCLE BUTTON */
-.btn-circle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  font-size: 1.4rem;
-  padding: 0;
+/* Image Container */
+.product-image-container {
+    background-color: #fff;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 220px;
+    overflow: hidden;
 }
 
-/* TOAST */
-.toast-custom {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #16a34a;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-weight: 600;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  z-index: 1055;
-  animation: slideIn 0.3s ease;
+.product-image-container img {
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.5s ease;
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+.product-card-hover:hover .product-image-container img {
+    transform: scale(1.08); /* Subtle zoom on hover */
+}
+
+/* --- Typography & UI Elements --- */
+.card-title {
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    line-height: 1.4;
+    min-height: 2.8rem; /* Keeps titles aligned */
+}
+
+.badge.bg-danger {
+    background-color: #cc0c39 !important; /* Premium Red */
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 6px 10px;
+    border-radius: 4px 12px 12px 4px;
+}
+
+.text-primary {
+    color: #0071dc !important; /* Tech Blue */
+}
+
+/* --- Buttons & Quantity Toggle --- */
+.btn-primary {
+    background-color: #0071dc !important;
+    border: none !important;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #005bb7 !important;
+}
+
+/* Quantity Toggle Styling */
+.quantity-toggle {
+    background-color: #f0f2f2;
+    border-radius: 8px;
+    border: 1px solid #d5d9d9;
+    box-shadow: 0 2px 5px rgba(15, 17, 17, 0.15);
+}
+
+.btn-qty-action {
+    background: transparent;
+    border: none;
+    color: #0f1111;
+    font-size: 1.2rem;
+    padding: 0 12px;
+    transition: background 0.2s;
+}
+
+.btn-qty-action:hover {
+    background-color: #e7e9ec;
+}
+
+/* --- Toast Notification --- */
+.fixed-top .bg-dark {
+    background-color: #232f3e !important; /* Amazon-style dark navy */
+    border: 1px solid #37475a;
 }

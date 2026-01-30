@@ -285,7 +285,7 @@ const userOptions = useMemo(() => {
 
         <div className="col-lg-3 col-md-6">
           <div className="kpi-card kpi-orange">
-            <h6>Total Investment Cost</h6>
+            <h6>Total Revenue</h6>
             <h3>₹ {totalCostInMillions} M</h3>
           </div>
         </div>

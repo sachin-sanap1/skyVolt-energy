@@ -127,6 +127,7 @@ const TurbineSVG = () => (
       stroke="#94a3b8"
       strokeWidth="2"
     />
+    
 
     {/* nacelle */}
     <rect x="265" y="45" width="60" height="18" rx="6" fill="#cbd5e1" stroke="#94a3b8" />
@@ -366,6 +367,22 @@ export default function WindEnergyPage() {
     () => ENERGY.filter(e => e.key !== "wind"),
     []
   );
+
+  const [showPopup, setShowPopup] = useState(false);
+
+const [formData, setFormData] = useState({
+  name: "",
+  email: "",
+  query: ""
+});
+
+const handlePopupSubmit = (e) => {
+  e.preventDefault();
+  console.log("Consultation Request:", formData);
+  setShowPopup(false);
+  navigate("/contact");
+};
+
 
 
   return (
@@ -787,11 +804,113 @@ export default function WindEnergyPage() {
         </div>
       </section>
 
+      {/* NEW: FREE CONSULTANCY CARD */}
+      <section className="container pb-5">
+        <div className="rounded-4 border-0 shadow-lg p-5 text-center text-white" 
+             style={{ background: 'linear-gradient(135deg, #70708d 0%, #22c55e 100%)' }}>
+          <div className="mx-auto" style={{ maxWidth: "600px" }}>
+            <h2 className="fw-bold display-6 mb-3">Confused about where to start?</h2>
+            <p className="opacity-90 fs-5 mb-4">
+              If you are new to renewable energy and don't know which solution fits your needs, 
+              we are here to help you with a professional roadmap.
+            </p>
+            <button 
+              className="btn btn-light btn-lg px-5 fw-bold  rounded-pill shadow"
+              onClick={() => setShowPopup(true)}
+            >
+              Get Free Consultancy
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* POPUP MODAL */}
+      {showPopup && (
+        <div className="custom-modal-overlay">
+          <div className="custom-modal-content rounded-4 shadow-lg border-0 bg-white p-4 animate-fade-in">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h4 className="fw-bold mb-0">Free Consultation</h4>
+              <button className="btn-close" onClick={() => setShowPopup(false)}></button>
+            </div>
+            <p className="text-muted small mb-4">Fill in your details and our experts will reach out to you within 24 hours.</p>
+            
+            <form onSubmit={handlePopupSubmit}>
+              <div className="mb-3 text-start">
+                <label className="form-label small fw-bold">Full Name</label>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  required 
+                  placeholder="John Doe"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+              <div className="mb-3 text-start">
+                <label className="form-label small fw-bold">Email Address</label>
+                <input 
+                  type="email" 
+                  className="form-control" 
+                  required 
+                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                />
+              </div>
+              <div className="mb-4 text-start">
+                <label className="form-label small fw-bold">What are you looking for?</label>
+                <textarea 
+                  className="form-control" 
+                  rows="3" 
+                  placeholder="Tell us about your project..."
+                  value={formData.query}
+                  onChange={(e) => setFormData({...formData, query: e.target.value})}
+                ></textarea>
+              </div>
+              <button type="submit" className="btn btn-success w-100 py-2 fw-bold">
+                Submit & Go to Contact Page
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .bg-slate-50 { background: #f8fafc; }
+        
+        .custom-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+        }
+
+        .custom-modal-content {
+          width: 100%;
+          max-width: 450px;
+          position: relative;
+        }
+
+        .animate-fade-in {
+          animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
 
       {/* Tailwind background helper (optional) */}
-      < style > {`
-        .bg-slate-50 { background: #f8fafc; }
-      `}</style >
+      
     </div >
   );
 }
